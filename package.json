@@ -1,0 +1,9 @@
+{
+  "name": "WezaBot",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "lodash": "^3.10.1",
+    "teabot": "^1.1.2"
+  }
+}
