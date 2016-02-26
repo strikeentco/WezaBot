@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "lodash": "^3.10.1",
-    "teabot": "^1.1.2"
+    "teabot": "^2.0.0",
+    "teabot-botan": "^1.0.0",
+    "yarl": "^1.0.0"
   }
 }

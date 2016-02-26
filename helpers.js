@@ -1,33 +1,8 @@
 var https = require('https');
+var yarl = require('yarl');
 var _ = require('lodash');
 
 var url = require('./config').url;
-
-function getHTTPS(path) {
-  return new Promise(function(resolve, reject) {
-    https.get(url + path, function(response) {
-      var chunks = [];
-
-      response.on('data', function(chunk) {
-        chunks.push(chunk);
-      });
-
-      response.on('end', function() {
-        resolve(Buffer.concat(chunks));
-      });
-    }).on('error', function(e) {
-      reject(e);
-    });
-  });
-}
-
-module.exports.getHTTPS = getHTTPS;
-
-function getJSON(path) {
-  return getHTTPS(path).then(JSON.parse);
-}
-
-module.exports.getJSON = getJSON;
 
 function checkWeza(_id, dialog) {
   if (dialog.getUserData('units')) {
@@ -36,25 +11,25 @@ function checkWeza(_id, dialog) {
     var units = 'c';
   }
 
-  var id = function(data) {
+  var id = function (data) {
     dialog.sendChatAction('upload_photo');
-    getHTTPS('image.json?city=' + data.city_id + '&units=' + units).then(function(res) {
+    yarl.get(url + 'image.json?city=' + data.city_id + '&units=' + units, { buffer: true }).then(function (res) {
       history(dialog, data);
       var caption = data.name + ', ' + data.country + ' | http://weza.ws/' + units + '/' + data.city_id;
       dialog
         .setKeyboard()
         .endAction()
-        .sendPhoto({buffer: res}, {caption: caption});
-    });
+        .sendPhoto(res.body, { caption: caption });
+    }).catch(dialog._error);
   };
 
-  getJSON('city.json?id=' + _id).then(function(res) {
-    if (res.city_id) {
-      id(res);
+  yarl.get(url + 'city.json?id=' + _id, { json: true }).then(function (res) {
+    if (res.body.city_id) {
+      id(res.body);
     } else {
       dialog.sendMessage('Sorry, IDK this city, try another one or send /cancel.');
     }
-  });
+  }).catch(dialog._error);
 }
 
 module.exports.checkWeza = checkWeza;
@@ -64,7 +39,7 @@ function _process(dialog, data) {
   var output = [];
   var double = [];
   var ids = [];
-  _.forEach(data, function(n, key) {
+  _.forEach(data, function (n, key) {
     country.push(n.country);
     ids.push(n.city_id.toString());
     double.push(n.show_name);
