@@ -12,8 +12,8 @@ var name = config.name;
 
 var TeaBot = require('teabot')(token, name);
 
-TeaBot.error(function (e) {
-  console.error('TeaBot Error:', e.stack);
+TeaBot.onError(function (e) {
+  console.error('TeaBot Error:', e, e.stack);
 });
 
 TeaBot.use('analytics', require('teabot-botan')(botanToken));

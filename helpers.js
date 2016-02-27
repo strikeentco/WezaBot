@@ -20,7 +20,7 @@ function checkWeza(_id, dialog) {
         .setKeyboard()
         .endAction()
         .sendPhoto(res.body, { caption: caption });
-    }).catch(dialog._error);
+    }).catch(dialog.error);
   };
 
   yarl.get(url + 'city.json?id=' + _id, { json: true }).then(function (res) {
@@ -29,7 +29,7 @@ function checkWeza(_id, dialog) {
     } else {
       dialog.sendMessage('Sorry, IDK this city, try another one or send /cancel.');
     }
-  }).catch(dialog._error);
+  }).catch(dialog.error);
 }
 
 module.exports.checkWeza = checkWeza;
